@@ -1,10 +1,14 @@
 import flask
 from flask import request, jsonify
 import json
-from ruuvitag_sensor.ruuvitag import RuuviTag
+import multiprocessing as mp
+from listener import listener
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+
+configData = ""
+data = mp.Manager().list()
 
 @app.route('/', methods=['GET'])
 def home():
@@ -19,15 +23,11 @@ def home():
 @app.route('/ruuvitag/read/<name>', methods=['GET'])
 def RuuviTagRead(name):
     ruuvitag = ""
-    # Read RuuviTags from config.json
-    with open('config.json') as f:
-        data = json.load(f)
     # Find ruuvitag from list
-    for tag in data["ruuvitags"]:
+    for tag in configData["ruuvitags"]:
         if tag["name"].lower() == name.lower():
             ruuvitag = tag
             break
-    
     # Check if ruuvitag was found
     if(ruuvitag == ""):
         return jsonify([{
@@ -35,17 +35,9 @@ def RuuviTagRead(name):
             "message": "RuuviTag with name (" + name + ") not found."
         }]), 404
     else:
-        # Get Ruuvitag data
-        # Device Bluetooth Address
-        try:
-            sensor = RuuviTag(ruuvitag["address"]).update()
-        except ValueError:
-            sensor = "RuuviTag address is not correct."
-        except:
-            sensor = "Error happened while trying to read RuuviTag values."
         return jsonify([{
             "status": "success",
-            "message": sensor
+            "message": data[ruuvitag["index"]]
         }]), 200
 
 @app.errorhandler(404)
@@ -57,5 +49,15 @@ def page_not_found(e):
         }
     ]
     return jsonify(response), 404
-    
-app.run(host='192.168.1.107')
+
+if __name__ == '__main__':
+    # Read data from config.json
+    with open('config.json') as f:
+        configData = json.load(f)
+
+    # Start RuuviTag Listeners
+    for tag in configData["ruuvitags"]:
+        data.append("Loading... Try again soon.")
+        mp.Process(target=listener, args=(data, 10, tag,)).start()
+
+    app.run(host=configData["server"]["ip"], port=configData["server"]["port"])
