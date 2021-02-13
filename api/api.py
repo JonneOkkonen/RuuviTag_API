@@ -5,10 +5,25 @@ import multiprocessing as mp
 from listener import listener
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 
+global configData
+global data
 configData = ""
 data = mp.Manager().list()
+
+@app.before_request
+def initializeServer():
+    global configData
+    global data
+    # Read data from config.json
+    with open('config.json') as f:
+        configData = json.load(f)
+
+    # Start RuuviTag Listeners
+    for tag in configData["ruuvitags"]:
+        data.append("Loading... Try again soon.")
+        mp.Process(target=listener, args=(data, tag, 10,)).start()
 
 @app.route('/', methods=['GET'])
 def home():
@@ -22,6 +37,8 @@ def home():
 
 @app.route('/ruuvitag/read/<name>', methods=['GET'])
 def RuuviTagRead(name):
+    global configData
+    global data
     ruuvitag = ""
     # Find ruuvitag from list
     for tag in configData["ruuvitags"]:
@@ -51,13 +68,4 @@ def page_not_found(e):
     return jsonify(response), 404
 
 if __name__ == '__main__':
-    # Read data from config.json
-    with open('config.json') as f:
-        configData = json.load(f)
-
-    # Start RuuviTag Listeners
-    for tag in configData["ruuvitags"]:
-        data.append("Loading... Try again soon.")
-        mp.Process(target=listener, args=(data, 10, tag,)).start()
-
-    app.run(host=configData["server"]["ip"], port=configData["server"]["port"])
+    app.run()

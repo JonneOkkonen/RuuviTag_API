@@ -1,15 +1,15 @@
-import time
-from ruuvitag_sensor.ruuvitag import RuuviTag
+from ruuvitag_sensor.ruuvi import RuuviTagSensor
 
-def listener(data, interval, tag):
+def listener(data, tag, interval):
     while(1):
         try:
-            # Get Ruuvitag data
-            sensor = RuuviTag(tag["address"]).update()
+            def handle_data(values):
+                # Send data to main process
+                data[tag["index"]] = values[1]
+
+            RuuviTagSensor.get_datas(handle_data, tag["address"])
         except ValueError:
-            sensor = "RuuviTag address is not correct."
-        except:
-            sensor = "Error happened while trying to read RuuviTag values."
-        # Send data to main process
-        data[tag["index"]] = sensor
-        time.sleep(interval)
+            state = "RuuviTag address is not correct."
+        except Exception as e:
+            state = "Error happened while trying to read RuuviTag values."
+            print(e)
