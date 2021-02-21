@@ -4,23 +4,26 @@ REST API for RuuviTag IoT Sensor. Requires Linux machine with Bluetooth. Designe
 
 # Installation
 
+> :warning: **Works best with Python3.**:Tested with Python 3.5.3.
+
 ## Gunicorn
 ```python
 # Clone Repository
 git clone https://github.com/JonneOkkonen/RuuviTag_API.git
 
 # Install needed packages
-pip install gunicorn
-pip install flask
-pip install ruuvitag_sensor
+sudo apt install gunicorn3
+pip3 install flask
+pip3 install flask-cors
+pip3 install ruuvitag_sensor
 
 # Run in production mode with gunicorn
 cd api
-gunicorn --bind 0.0.0.0:5000 api:app
+gunicorn3 --bind 0.0.0.0:5000 api:app
 
 # Run in development mode
 cd api
-python api.py
+python3 api.py
 ```
 
 # Config
