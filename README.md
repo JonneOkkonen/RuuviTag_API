@@ -2,9 +2,14 @@
 
 REST API for RuuviTag IoT Sensor. Requires Linux machine with Bluetooth. Designed to run on Raspberry Pi.
 
+## Upcoming improvements
+
+* Better support for multiple RuuviTags
+* Docker image
+
 # Installation
 
-> :warning: **Works best with Python3.**:Tested with Python 3.5.3.
+> :warning: **Works best with Python3**:Tested with Python 3.5.3.
 
 ## Gunicorn
 ```python
