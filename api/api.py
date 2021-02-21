@@ -35,12 +35,10 @@ def initializeServer():
 
 @app.route('/', methods=['GET'])
 def home():
-    response = [
-        {
-            "status": "success",
-            "message": "Welcome to RuuviTag API. Check routing documentation from GitHub."
-        }
-    ]
+    response = {
+        "status": "success",
+        "message": "Welcome to RuuviTag API. Check routing documentation from GitHub."
+    }
     return jsonify(response), 200
 
 @app.route('/ruuvitag/read/<name>', methods=['GET'])
@@ -55,24 +53,37 @@ def RuuviTagRead(name):
             break
     # Check if ruuvitag was found
     if(ruuvitag == ""):
-        return jsonify([{
+        return jsonify({
             "status": "error",
             "message": "RuuviTag with name (" + name + ") not found."
-        }]), 404
+        }), 404
     else:
-        return jsonify([{
+        return jsonify({
             "status": "success",
-            "message": data[ruuvitag["index"]]
-        }]), 200
+            "data": data[ruuvitag["index"]]
+        }), 200
+
+@app.route('/ruuvitag/list', methods=['GET'])
+def allRuuvitags():
+    global configData
+    data = []
+    for tag in configData["ruuvitags"]:
+        data.append({
+            "name" : tag["name"],
+            "address": tag["address"]
+        })
+    response = {
+        "status": "success",
+        "data": data
+    }
+    return jsonify(response), 200
 
 @app.errorhandler(404)
 def page_not_found(e):
-    response = [
-        {
-            "status": "error",
-            "message": "The resource could not be found."
-        }
-    ]
+    response = {
+        "status": "error",
+        "message": "The resource could not be found."
+    }
     return jsonify(response), 404
 
 if __name__ == '__main__':

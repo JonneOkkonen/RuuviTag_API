@@ -69,12 +69,36 @@ Config.json is located in API folder. Fill in all necessary information to it.
 **Response Content**
 
 ```json
-[
-    {
-        "message": "Welcome to RuuviTag API. Check routing documentation from GitHub.",
-        "status": "success"
-    }
-]
+{
+    "message": "Welcome to RuuviTag API. Check routing documentation from GitHub.",
+    "status": "success"
+}
+```
+
+## List all Ruuvitags
+
+**URL** : `/ruuvitag/list`
+
+**Example** : `http://localhost:5000/ruuvitag/list`
+
+**Method** : `GET`
+
+### Success Response
+
+**Code** : `200 OK`
+
+**Response Content**
+
+```json
+{
+    "data": [
+        {
+            "address": "A1:B2:C3:D4:E5:F6",
+            "name": "Ruuvitag name"
+        }
+    ],
+    "status": "success"
+}
 ```
 
 ## Read Sensor Data
@@ -92,22 +116,19 @@ Config.json is located in API folder. Fill in all necessary information to it.
 **Response Content**
 
 ```json
-[
-    {
-        "message": {
-            "acceleration": 1032.8397746020435,
-            "acceleration_x": -362,
-            "acceleration_y": -965,
-            "acceleration_z": -67,
-            "battery": 2797,
-            "data_format": 3,
-            "humidity": 96.0,
-            "pressure": 1017.96,
-            "temperature": -10.72
-        },
-        "status": "success"
-    }
-]
+{
+    "data": {
+        "acceleration": 1037.847773038031,
+        "acceleration_x": -362,
+        "acceleration_y": -970,
+        "acceleration_z": -72,
+        "battery": 2773,
+        "humidity": 93.0,
+        "pressure": 1012.84,
+        "temperature": -10.76
+    },
+    "status": "success"
+}
 ```
 
 ### Error Response
@@ -119,10 +140,8 @@ Config.json is located in API folder. Fill in all necessary information to it.
 **Content** :
 
 ```json
-[
-    {
-        "message": "RuuviTag with name (name) not found.",
-        "status": "error"
-    }
-]
+{
+    "message": "RuuviTag with name (name) not found.",
+    "status": "error"
+}
 ```
